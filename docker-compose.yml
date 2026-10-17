@@ -1,0 +1,37 @@
+# Local/self-hosted full stack: MongoDB + backend + frontend.
+# For managed hosting (Atlas + Render/Railway + Vercel) you don't need this file -
+# just deploy backend/ and frontend/ separately and point them at Atlas.
+version: "3.8"
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    env_file: ./backend/.env
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/mattress_erp
+    depends_on:
+      - mongo
+    ports:
+      - "5000:5000"
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+
+volumes:
+  mongo_data:

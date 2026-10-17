@@ -1,0 +1,26 @@
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Build output
+.next/
+dist/
+build/
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Local configuration
+.DS_Store
+Thumbs.db
+
+# Archives - upload source code, not ZIP copies
+*.zip
+
