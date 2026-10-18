@@ -37,12 +37,82 @@ app.use(helmet());
 app.use(compression());
 
 // CORS: restrict to a comma-separated whitelist in production via CORS_ORIGINS,
-// falls back to allow-all in development for convenience.
-const corsOrigins = (process.env.CORS_ORIGINS || "").split(",").map((o) => o.trim()).filter(Boolean);
-app.use(cors({
-  origin: corsOrigins.length > 0 ? corsOrigins : true,
-  credentials: true,
-}));
+
+const corsOrigins = (process.env.CORS_ORIGINS || "")
+  .split(",")
+  .map((origin) => origin.trim().replace(/\/+$/, ""))
+  .filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests without Origin (e.g. server-to-server, health checks)
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      let hostname;
+
+      try {
+        hostname = new URL(origin).hostname.toLowerCase();
+      } catch {
+        return callback(new Error("Invalid CORS origin"));
+      }
+
+      const normalizedOrigin = origin.replace(/\/+$/, "");
+
+      // Exact origins configured in environment variables
+      const explicitlyAllowed = corsOrigins.includes(normalizedOrigin);
+
+      // Permanent production frontend
+      const productionDomain =
+        hostname === "mattress-erp.vercel.app";
+
+      // Dynamic preview URLs for your Vercel project/team
+     
+const vercelPreview =
+  /^mattress-[a-z0-9-]+-rahulsharma3-9031s-projects\.vercel\.app$/i.test(
+    hostname
+  );
+
+      // Allow localhost only outside production
+      const localDevelopment =
+        process.env.NODE_ENV !== "production" &&
+        /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin);
+
+      if (
+        explicitlyAllowed ||
+        productionDomain ||
+        vercelPreview ||
+        localDevelopment
+      ) {
+        return callback(null, true);
+      }
+
+      return callback(new Error(`CORS blocked origin: ${origin}`));
+    },
+
+    credentials: true,
+
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "OPTIONS",
+    ],
+
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Accept",
+      "X-Requested-With",
+    ],
+
+    optionsSuccessStatus: 204,
+  })
+);
 
 app.use(express.json({ limit: "2mb" }));
 app.use(mongoSanitize()); // strips $/. operators from user input - blocks NoSQL injection

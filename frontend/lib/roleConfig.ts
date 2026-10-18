@@ -18,11 +18,11 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Ledger", href: "/masters/ledger", roles: ["super_admin", "admin"], icon: "book", group: "Masters" },
   { label: "HSN / SAC", href: "/masters/hsn", roles: ["super_admin", "admin"], icon: "tag", group: "Masters" },
   { label: "Item", href: "/masters/item", roles: ["super_admin", "admin", "floor_manager"], icon: "inventory", group: "Masters" },
-
+/* 
   { label: "Employees", href: "/hr/employees", roles: ["super_admin", "admin"], icon: "people", group: "HR" },
   { label: "Attendance", href: "/hr/attendance", roles: ["super_admin", "admin", "floor_manager"], icon: "checkCircle", group: "HR" },
   { label: "Salary Slips", href: "/hr/salary-slips", roles: ["super_admin", "admin"], icon: "receipt", group: "HR" },
-
+ */
   { label: "Work Orders", href: "/production", roles: ["super_admin", "admin", "floor_manager"], icon: "factory", group: "Production" },
 
   { label: "Sales", href: "/sales", roles: ["super_admin", "admin", "salesman", "dealer"], icon: "sell", group: "Transactions" },
